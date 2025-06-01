@@ -20,11 +20,31 @@
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   </head>
 
-  <body>
-    <main class="container mx-auto mt-28 px-5 flex">
+  <body class="bg-gray-100">
+    <header>
+      <div class="navbar bg-base-100 shadow-sm">
+        <div class="flex-1">
+          <a class="btn btn-ghost text-xl">Sales Import System</a>
+        </div>
+        <div class="flex-none">
+          <ul class="menu menu-horizontal px-1">
+            <li><a class="font-bold text-gray-600 hover:text-gray-800">Dashboard</a></li>
+            <li><a class="font-bold text-gray-600 hover:text-gray-800">Import History</a></li>
+          </ul>
+        </div>
+      </div>
+    </header>
+    <main class="container mx-auto px-5 flex">
       <%= yield %>
     </main>
   </body>
+  <footer class="footer footer-center p-4 bg-base-200 text-base-content mt-10">
+    <aside>
+      <p>© <%= Date.today.year %> Sales Import System.</p>
+    </aside>
+  </footer>
 </html>
