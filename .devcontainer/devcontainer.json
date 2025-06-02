@@ -26,17 +26,18 @@
     "vscode": {
       "settings": {
         "ruby.rubocop.executePath": "/usr/local/bundle/bin/",
-        "extensions": [
-          "Shopify.ruby-lsp",
-          "GitHub.copilot",
-          "sporto2.rails-go-to-spec-2",
-          "aliariff.auto-add-brackets",
-          "formulahendry.auto-close-tag",
-          "aliariff.vscode-erb-beautify",
-          "misogi.ruby-rubocop",
-          "mechatroner.rainbow-csv"
-        ]
-      }
+      },
+      "extensions": [
+        "Shopify.ruby-lsp",
+        "GitHub.copilot",
+        "sporto2.rails-go-to-spec-2",
+        "aliariff.auto-add-brackets",
+        "formulahendry.auto-close-tag",
+        "aliariff.vscode-erb-beautify",
+        "misogi.ruby-rubocop",
+        "mechatroner.rainbow-csv",
+        "fnando.linter"
+      ]
     }
   }
 }

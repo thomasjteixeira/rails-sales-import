@@ -63,7 +63,7 @@ class SalesImport
     def file_attached
       return if sales_import&.import_file&.attached?
 
-      errors.add(:sales_import, 'must have a file attached')
+      errors.add(:sales_import, "must have a file attached")
     end
 
     def parse_row(row)
@@ -91,7 +91,7 @@ class SalesImport
       purchaser = find_or_create_purchaser(sale_data[:purchaser_name])
       item = find_or_create_item(sale_data[:item_description])
       merchant = find_or_create_merchant(
-        sale_data[:merchant_name], 
+        sale_data[:merchant_name],
         sale_data[:merchant_address]
       )
 

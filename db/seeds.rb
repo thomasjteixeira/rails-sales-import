@@ -10,7 +10,9 @@ Merchant.destroy_all
 seed_files = [
   "sales_import_1.tab",
   "sales_import_2.csv",
-  "sales_import_3.tab"
+  "sales_import_3.tab",
+  "sales_import_4.tab",
+  "sales_import_5.tab"
 ]
 
 def attach_import_file(import_record, file_path, filename)

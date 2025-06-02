@@ -59,6 +59,7 @@ group :development, :test do
   gem "rubocop-rspec",            require: false
   gem "rubocop-rspec_rails",      require: false
   gem "rubocop-thread_safety",    require: false
+  gem "erb_lint"
 end
 
 group :development do

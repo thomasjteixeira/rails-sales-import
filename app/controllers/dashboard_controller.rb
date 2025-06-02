@@ -1,7 +1,6 @@
 class DashboardController < ApplicationController
   def index
     @recent_imports = SalesImport.includes(:sales)
-                                .where(status: :completed)
                                 .order(created_at: :desc)
                                 .limit(5)
 

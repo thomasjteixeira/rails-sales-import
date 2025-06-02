@@ -2,30 +2,34 @@
   <div class="mb-8 p-6 bg-base-100 rounded-box shadow">
     <h2 class="text-xl font-semibold mb-4">Upload Sales File</h2>
     <div class="flex flex-col sm:flex-row items-center gap-4">
-      <input type="file" class="file-input file-input-bordered w-full max-w-xs" />
-      <button class="btn btn-primary">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
-        </svg>
-        Import
+      <input type="file" class="file-input file-input-bordered w-full sm:flex-1">
+      <button class="btn btn-soft btn-primary text-base">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
+      </svg>
+      <span>Import</span>
       </button>
     </div>
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
     <div class="card bg-base-100 shadow-xl">
-      <div class="card-body">
+      <div class="card-body py-4">
         <div class="stat">
-          <div class="stat-title text-base-content/70">Last Gross Income</div>
-          <div class="stat-value text-primary">$12,458.32</div>
+            <div class="stat-title text-base-content/70 text-lg">Last Gross Income</div>
+          <div class="stat-value text-primary">
+            <%= number_to_currency((@last_gross_income / 100.0), unit: "R$", separator: ",", delimiter: ".", format: "%u %n") %>
+          </div>
         </div>
       </div>
     </div>
     <div class="card bg-base-100 shadow-xl">
-      <div class="card-body">
+      <div class="card-body py-4">
         <div class="stat">
-          <div class="stat-title text-base-content/70">Total Gross Income</div>
-          <div class="stat-value text-secondary">$158,947.21</div>
+          <div class="stat-title text-base-content/70 text-lg">Total Gross Income</div>
+            <div class="stat-value text-green-400">
+            <%= number_to_currency((@total_gross_income / 100.0), unit: "R$", separator: ",", delimiter: ".", format: "%u %n") %>
+            </div>
         </div>
       </div>
     </div>
@@ -44,27 +48,30 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>sales_june.2023.tsv</td>
-            <td>2023-06-15 14:30</td>
-            <td><span class="badge badge-success badge-outline">Success</span></td>
-            <td class="text-right">$5,432.10</td>
-          </tr>
-          <tr>
-            <td>sales_may_2023.tsv</td>
-            <td>2023-05-31 09:15</td>
-            <td><span class="badge badge-info badge-outline">Processing</span></td>
-            <td class="text-right">$3,217.85</td>
-          </tr>
-          <tr>
-            <td>sales_april_2023.tsv</td>
-            <td>2023-04-30 16:45</td>
-            <td><span class="badge badge-error badge-outline">Error</span></td>
-            <td class="text-right">$0.00</td>
-          </tr>
+          <% if @recent_imports.any? %>
+            <% @recent_imports.each do |import| %>
+              <tr>
+                <td><%= import.filename || 'N/A' %></td>
+                <td><%= import.created_at.strftime('%Y-%m-%d %H:%M') %></td>
+                <td>
+                  <span class="badge <%= status_badge_class(import.status) %> badge-outline">
+                    <%= import.status.humanize %>
+                  </span>
+                </td>
+                <td class="text-right">
+                  <%= number_to_currency((import.total_sales_cents || 0) / 100.0, unit: "R$", separator: ",", delimiter: ".", format: "%u %n") %>
+                </td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="4" class="text-center text-base-content/60">
+                No imports found. Upload your first sales file to get started!
+              </td>
+            </tr>
+          <% end %>
         </tbody>
       </table>
     </div>
   </div>
-
 </div>
