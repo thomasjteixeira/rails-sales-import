@@ -1,16 +1,42 @@
 <div class="container mx-auto px-4 py-8">
-  <div class="mb-8 p-6 bg-base-100 rounded-box shadow">
+  <% if notice %>
+    <div class="alert alert-success mb-4">
+      <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <span><%= notice %></span>
+    </div>
+  <% end %>
+
+  <% if alert %>
+    <div class="alert alert-error mb-4">
+      <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <span><%= alert %></span>
+    </div>
+  <% end %>
+
+  <%= form_with url: upload_path, multipart: true, local: true, class: "mb-8 p-6 bg-base-100 rounded-box shadow" do |form| %>
     <h2 class="text-xl font-semibold mb-4">Upload Sales File</h2>
     <div class="flex flex-col sm:flex-row items-center gap-4">
-      <input type="file" class="file-input file-input-bordered w-full sm:flex-1">
-      <button class="btn btn-soft btn-primary text-base">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
-      </svg>
-      <span>Import</span>
-      </button>
+      <%= form.file_field :import_file,
+          accept: ".tab,.tsv,.csv",
+          required: true,
+          class: "file-input file-input-bordered w-full sm:flex-1" %>
+      <%= form.submit "Import",
+          class: "btn btn-primary",
+          data: { disable_with: "Processing..." } do %>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
+        </svg>
+        Import
+      <% end %>
     </div>
-  </div>
+    <div class="text-sm text-base-content/60 mt-2">
+      Supported formats: .tab, .tsv, .csv (tab-separated values)
+    </div>
+  <% end %>
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
     <div class="card bg-base-100 shadow-xl">
@@ -27,14 +53,15 @@
       <div class="card-body py-4">
         <div class="stat">
           <div class="stat-title text-base-content/70 text-lg">Total Gross Income</div>
-            <div class="stat-value text-green-400">
+          <div class="stat-value text-green-400">
             <%= number_to_currency((@total_gross_income / 100.0), unit: "R$", separator: ",", delimiter: ".", format: "%u %n") %>
-            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
+  <%# Recent Imports Section %>
   <div class="bg-base-100 rounded-box shadow p-6">
     <h2 class="text-xl font-semibold mb-4">Recent Imports</h2>
     <div class="overflow-x-auto">
