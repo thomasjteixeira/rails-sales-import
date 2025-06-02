@@ -33,7 +33,8 @@
           "aliariff.auto-add-brackets",
           "formulahendry.auto-close-tag",
           "aliariff.vscode-erb-beautify",
-          "misogi.ruby-rubocop"
+          "misogi.ruby-rubocop",
+          "mechatroner.rainbow-csv"
         ]
       }
     }

@@ -11,7 +11,6 @@ class SalesImport
 
     validates :sales_import, presence: true
     validate :file_attached
-    validate :file_readable
 
     def call
       return false unless valid?
@@ -27,18 +26,20 @@ class SalesImport
           quote_char: '"',
           remove_empty_values: true,
           strip_whitespace: true,
-          convert_values_to_numeric: true
+          convert_values_to_numeric: false
         }
 
-        SmarterCSV.process(file_path, options) do |chunk|
-          chunk.each do |row|
-            next if row.values.all?(&:blank?)
+        sales_import.import_file.blob.open do |tempfile|
+          SmarterCSV.process(tempfile.path, options) do |chunk|
+            chunk.each do |row|
+              next if row.values.all?(&:blank?)
 
-            sale_data = parse_row(row)
-            sale = create_sale(sale_data)
+              sale_data = parse_row(row)
+              sale = create_sale(sale_data)
 
-            total_revenue += sale.gross_revenue_cents if sale.persisted?
-            processed_rows += 1
+              total_revenue += sale.gross_revenue_cents if sale.persisted?
+              processed_rows += 1
+            end
           end
         end
 
@@ -63,17 +64,6 @@ class SalesImport
       return if sales_import&.import_file&.attached?
 
       errors.add(:sales_import, 'must have a file attached')
-    end
-
-    def file_readable
-      return unless sales_import&.import_file&.attached?
-      return if File.readable?(file_path)
-
-      errors.add(:sales_import, 'file is not readable')
-    end
-
-    def file_path
-      @file_path ||= ActiveStorage::Blob.service.path_for(sales_import.import_file.key)
     end
 
     def parse_row(row)
