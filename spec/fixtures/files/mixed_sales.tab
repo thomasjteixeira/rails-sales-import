@@ -1,0 +1,4 @@
+purchaser name	item description	item price	purchase count	merchant address	merchant name
+John Doe	Test Item	10.00	2	123 Main St	Test Store
+    Invalid Item	15.50	1	456 Oak Ave	Another Store
+Jane Smith	Valid Item	5.00	3	789 Pine Rd	Third Store

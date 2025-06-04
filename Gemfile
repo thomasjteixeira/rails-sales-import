@@ -12,6 +12,7 @@ gem "tailwindcss-rails"
 gem "jbuilder"
 gem "smarter_csv"
 gem "kaminari"
+gem "dry-monads"
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 # gem "bcrypt", "~> 3.1.7"
@@ -42,7 +43,6 @@ group :development, :test do
   gem "rspec-rails"
   gem "factory_bot_rails"
   gem "faker"
-  gem "simplecov", require: false
   gem "shoulda-matchers"
   gem "pry-nav"
   gem "pry-rails"

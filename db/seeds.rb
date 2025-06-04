@@ -54,7 +54,7 @@ seed_files.each_with_index do |filename, index|
 
   puts "✅ File attached successfully"
 
-  service = SalesImport::Create.new(sales_import: sales_import)
+  service = SalesImports::Create.new(sales_import: sales_import)
 
   puts "Service valid? #{service.valid?}"
   unless service.valid?
@@ -74,7 +74,6 @@ seed_files.each_with_index do |filename, index|
   end
 end
 
-# Display summary
 puts "\n📈 Seeding Summary:"
 puts "   SalesImports: #{SalesImport.count}"
 puts "   Sales: #{Sale.count}"
@@ -82,7 +81,6 @@ puts "   Purchasers: #{Purchaser.count}"
 puts "   Items: #{Item.count}"
 puts "   Merchants: #{Merchant.count}"
 
-# Display some sample data
 puts "\n🔍 Sample Data:"
 if Purchaser.any?
   puts "   Purchasers: #{Purchaser.limit(3).pluck(:name).join(', ')}"
