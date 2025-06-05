@@ -25,4 +25,18 @@ class SalesImport < ApplicationRecord
   def sales_count
     sales.count
   end
+
+
+
+    def self.last_gross_income
+      successful.order(created_at: :desc).first&.total_sales_cents || 0
+    end
+
+    def self.total_gross_income
+      successful.sum(:total_sales_cents) || 0
+    end
+
+    def self.recent_imports(limit = 5)
+      includes(:sales).recent.limit(limit)
+    end
 end
