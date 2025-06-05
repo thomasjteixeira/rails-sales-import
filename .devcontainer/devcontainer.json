@@ -12,20 +12,19 @@
     "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
     "ghcr.io/rails/devcontainer/features/sqlite3": {}
   },
+  // "postCreateCommand": "bundle install && rails db:create && rails db:migrate && rails db:seed",
   "containerEnv": {
     "CAPYBARA_SERVER_PORT": "45678",
     "SELENIUM_HOST": "selenium",
+    "REDIS_URL": "redis://redis:6379/0",
     "KAMAL_REGISTRY_PASSWORD": "$KAMAL_REGISTRY_PASSWORD"
   },
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
-  "forwardPorts": [
-    3000
-  ],
   "postCreateCommand": "bin/setup --skip-server",
   "customizations": {
     "vscode": {
       "settings": {
-        "ruby.rubocop.executePath": "/usr/local/bundle/bin/",
+        "ruby.rubocop.executePath": "/usr/local/bundle/bin/"
       },
       "extensions": [
         "Shopify.ruby-lsp",
@@ -38,6 +37,21 @@
         "mechatroner.rainbow-csv",
         "fnando.linter"
       ]
+    }
+  },
+  "forwardPorts": [3000, 6379, 4567],
+  "portsAttributes": {
+    "3000": {
+      "label": "Rails App",
+      "onAutoForward": "notify"
+    },
+    "6379": {
+      "label": "Redis",
+      "onAutoForward": "silent"
+    },
+    "4567": {
+      "label": "Sidekiq Web",
+      "onAutoForward": "notify"
     }
   }
 }
