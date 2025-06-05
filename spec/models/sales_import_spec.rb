@@ -153,4 +153,76 @@ RSpec.describe SalesImport, type: :model do
       expect { sale.reload }.to raise_error(ActiveRecord::RecordNotFound)
     end
   end
+
+  describe '.calculate_statistics' do
+    let!(:completed_imports) { create_list(:sales_import, 3, :completed, total_sales_cents: 1000) }
+    let!(:failed_imports) { create_list(:sales_import, 2, :failed) }
+    let!(:pending_imports) { create_list(:sales_import, 1) }
+
+    subject { SalesImport.calculate_statistics }
+
+    it 'returns a hash with statistics' do
+      expect(subject).to be_a(Hash)
+    end
+
+    it 'returns correct total imports count' do
+      expect(subject[:total_imports]).to eq(6) # 3 + 2 + 1
+    end
+
+    it 'returns correct successful imports count' do
+      expect(subject[:successful_imports]).to eq(3)
+    end
+
+    it 'returns correct failed imports count' do
+      expect(subject[:failed_imports]).to eq(2)
+    end
+
+    it 'returns correct pending imports count' do
+      expect(subject[:pending_imports]).to eq(1)
+    end
+
+    it 'returns correct total gross income' do
+      expect(subject[:total_gross_income]).to eq(3000) # 3 * 1000
+    end
+
+    context 'when no imports exist' do
+      before { SalesImport.destroy_all }
+
+      it 'returns zeros for all statistics' do
+        expect(subject[:total_imports]).to eq(0)
+        expect(subject[:successful_imports]).to eq(0)
+        expect(subject[:failed_imports]).to eq(0)
+        expect(subject[:pending_imports]).to eq(0)
+        expect(subject[:total_gross_income]).to eq(0)
+      end
+    end
+
+    context 'when no successful imports exist' do
+      before { SalesImport.where(status: :completed).destroy_all }
+
+      it 'returns zero for gross income' do
+        expect(subject[:total_gross_income]).to eq(0)
+      end
+
+      it 'still counts other statuses correctly' do
+        expect(subject[:failed_imports]).to eq(2)
+        expect(subject[:pending_imports]).to eq(1)
+        expect(subject[:total_imports]).to eq(3)
+      end
+    end
+
+    context 'with mixed total_sales_cents values' do
+      before do
+        SalesImport.destroy_all
+        create(:sales_import, :completed, total_sales_cents: 500)
+        create(:sales_import, :completed, total_sales_cents: 1500)
+        create(:sales_import, :failed, total_sales_cents: 2000) # Should not be counted
+      end
+
+      it 'sums only successful imports total_sales_cents' do
+        expect(subject[:total_gross_income]).to eq(2000) # 500 + 1500
+        expect(subject[:successful_imports]).to eq(2)
+      end
+    end
+  end
 end
