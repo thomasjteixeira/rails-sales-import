@@ -4,6 +4,23 @@ FactoryBot.define do
     total_sales_cents { 0 }
     filename { "valid_sales.tab" }
 
+    trait :pending do
+      status { :pending }
+    end
+
+    trait :processing do
+      status { :processing }
+    end
+
+    trait :completed do
+      status { :completed }
+      total_sales_cents { 1000 }
+    end
+
+    trait :failed do
+      status { :failed }
+    end
+
     trait :with_file do
       after(:build) do |sales_import|
         file_path = Rails.root.join('spec', 'fixtures', 'files', 'valid_sales.tab')
@@ -62,15 +79,6 @@ FactoryBot.define do
           content_type: 'text/tab-separated-values'
         )
       end
-    end
-
-    trait :completed do
-      status { :completed }
-      total_sales_cents { 2000 }
-    end
-
-    trait :failed do
-      status { :failed }
     end
   end
 end

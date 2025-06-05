@@ -11,7 +11,6 @@ Sidekiq.configure_client do |config|
   config.redis = { url: redis_url }
 end
 
-# Configure Sidekiq Web UI (basic auth in production)
 if Rails.env.production?
   Sidekiq::Web.use(Rack::Auth::Basic) do |user, password|
     [ user, password ] == [ "admin", "admin" ]
