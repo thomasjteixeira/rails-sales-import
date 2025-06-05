@@ -16,7 +16,7 @@ class DashboardController < ApplicationController
     sales_import = create_sales_import
     return unless sales_import
 
-    process_import(sales_import)
+    enqueue_processing_job(sales_import)
   end
 
   private
@@ -35,15 +35,12 @@ class DashboardController < ApplicationController
     end
   end
 
-  def process_import(sales_import)
-    processor = SalesImports::Processor.new(sales_import)
-    result = processor.call
-
-    case result
-    in Success(_import)
-      redirect_to root_path, notice: "File uploaded and processed successfully!"
-    in Failure(error_message)
-      redirect_to root_path, alert: error_message
-    end
+  def enqueue_processing_job(sales_import)
+    SalesImportProcessingJob.perform_later(sales_import.id)
+    redirect_to root_path, notice: "File uploaded successfully! Processing in background..."
+  rescue StandardError => e
+    Rails.logger.error "Failed to enqueue processing job for sales import #{sales_import.id}: #{e.message}"
+    sales_import.update!(status: :failed)
+    redirect_to root_path, alert: "Failed to start processing. Please try again."
   end
 end

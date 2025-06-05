@@ -1,6 +1,16 @@
 require 'rails_helper'
 
 RSpec.describe "DashboardController", type: :request do
+  include ActiveJob::TestHelper
+
+  around(:each) do |example|
+    original_adapter = ActiveJob::Base.queue_adapter
+    ActiveJob::Base.queue_adapter = :test
+    clear_enqueued_jobs
+    example.run
+    ActiveJob::Base.queue_adapter = original_adapter
+  end
+
   describe "GET #index" do
     let!(:completed_import1) { create(:sales_import, :completed, total_sales_cents: 5000, created_at: 2.days.ago) }
     let!(:completed_import2) { create(:sales_import, :completed, total_sales_cents: 3000, created_at: 1.day.ago) }
@@ -82,133 +92,45 @@ RSpec.describe "DashboardController", type: :request do
       fixture_file_upload(Rails.root.join('spec', 'fixtures', 'files', 'valid_sales.tab'), 'text/tab-separated-values')
     end
 
-    let(:invalid_file) do
-      fixture_file_upload(Rails.root.join('spec', 'fixtures', 'files', 'invalid_sales_empty_purchaser.tab'), 'text/tab-separated-values')
-    end
-
-    context "with valid file upload" do
-      it "creates a new SalesImport record" do
-        expect {
-          post upload_path, params: { import_file: valid_file }
-        }.to change(SalesImport, :count).by(1)
-      end
-
-      it "attaches the file to the import" do
-        post upload_path, params: { import_file: valid_file }
-
-        created_import = SalesImport.last
-        expect(created_import.import_file).to be_attached
-        expect(created_import.import_file.filename.to_s).to eq('valid_sales.tab')
-      end
-
-      it "sets the filename" do
-        post upload_path, params: { import_file: valid_file }
-
-        created_import = SalesImport.last
-        expect(created_import.filename).to eq('valid_sales.tab')
-      end
-
-
-      it "processes the file successfully" do
-        post upload_path, params: { import_file: valid_file }
-
-        created_import = SalesImport.last
-        created_import.reload
-
-
-        expect(created_import.status).to eq('completed')
-        expect(created_import.total_sales_cents).to be_positive
-      end
-
-      it "creates sales records" do
-        expect {
-          post upload_path, params: { import_file: valid_file }
-        }.to change(Sale, :count).by(2)
-      end
-
-      it "creates associated records" do
-        expect {
-          post upload_path, params: { import_file: valid_file }
-        }.to change(Purchaser, :count).by(2)
-          .and change(Item, :count).by(2)
-          .and change(Merchant, :count).by(2)
-      end
-
-      it "redirects to root path with success notice" do
-        post upload_path, params: { import_file: valid_file }
-
-        expect(response).to redirect_to(root_path)
-        expect(flash[:notice]).to eq("File uploaded and processed successfully!")
-      end
-    end
-
-    context "with invalid file (empty purchaser)" do
-      it "creates a SalesImport record but marks it as failed" do
-        expect {
-          post upload_path, params: { import_file: invalid_file }
-        }.to change(SalesImport, :count).by(1)
-
-        created_import = SalesImport.last
-        created_import.reload
-        expect(created_import.status).to eq('failed')
-      end
-
-      it "does not create sales records" do
-        expect {
-          post upload_path, params: { import_file: invalid_file }
-        }.not_to change(Sale, :count)
-      end
-
-      it "redirects to root path with error alert" do
-        post upload_path, params: { import_file: invalid_file }
-
-        expect(response).to redirect_to(root_path)
-        expect(flash[:alert]).to include("Invalid data found")
-      end
-    end
-
     context "when no file is provided" do
-      it "does not create a SalesImport record" do
+      it "does not create SalesImport or enqueue jobs" do
         expect {
           post upload_path, params: {}
         }.not_to change(SalesImport, :count)
-      end
-
-      it "redirects to root path with error alert" do
-        post upload_path, params: {}
 
         expect(response).to redirect_to(root_path)
         expect(flash[:alert]).to eq("Please select a file to upload.")
+        expect(enqueued_jobs).to be_empty
       end
     end
 
-    context "when empty file parameter is provided" do
-      it "does not create a SalesImport record" do
+    context "when blank file parameter is provided" do
+      it "does not create SalesImport or enqueue jobs" do
         expect {
           post upload_path, params: { import_file: nil }
         }.not_to change(SalesImport, :count)
-      end
-
-      it "redirects to root path with error alert" do
-        post upload_path, params: { import_file: nil }
 
         expect(response).to redirect_to(root_path)
         expect(flash[:alert]).to eq("Please select a file to upload.")
+        expect(enqueued_jobs).to be_empty
       end
     end
 
-    context "when blank string is provided as file" do
-      it "does not create a SalesImport record" do
+    context "with valid file upload" do
+      it "creates SalesImport, attaches file, and enqueues processing job" do
         expect {
-          post upload_path, params: { import_file: "" }
-        }.not_to change(SalesImport, :count)
-      end
+          post upload_path, params: { import_file: valid_file }
+        }.to change(SalesImport, :count).by(1)
+         .and have_enqueued_job(SalesImportProcessingJob).with(kind_of(Integer))
 
-      it "redirects to root path with error alert" do
-        post upload_path, params: { import_file: "" }
+        created_import = SalesImport.last
+        expect(created_import.status).to eq('pending')
+        expect(created_import.filename).to eq('valid_sales.tab')
+        expect(created_import.import_file).to be_attached
+        expect(created_import.import_file.filename.to_s).to eq('valid_sales.tab')
 
         expect(response).to redirect_to(root_path)
-        expect(flash[:alert]).to eq("Please select a file to upload.")
+        expect(flash[:notice]).to eq("File uploaded successfully! Processing in background...")
       end
     end
 
@@ -218,35 +140,68 @@ RSpec.describe "DashboardController", type: :request do
         allow_any_instance_of(ActiveStorage::Attached::One).to receive(:attached?).and_return(false)
       end
 
-      it "creates SalesImport but marks as failed" do
+      it "creates SalesImport but marks as failed and does not enqueue jobs" do
         expect {
           post upload_path, params: { import_file: valid_file }
         }.to change(SalesImport, :count).by(1)
 
         created_import = SalesImport.last
         expect(created_import.status).to eq('failed')
-      end
-
-      it "redirects with attachment error message" do
-        post upload_path, params: { import_file: valid_file }
-
         expect(response).to redirect_to(root_path)
         expect(flash[:alert]).to eq("Failed to attach file. Please try again.")
+        expect(enqueued_jobs).to be_empty
       end
     end
 
-    context "when processor service fails" do
+    context "when job enqueuing fails" do
       before do
-        allow_any_instance_of(SalesImports::Processor).to receive(:call)
-          .and_return(Dry::Monads::Failure("Processing failed: Service error"))
+        allow(SalesImportProcessingJob).to receive(:perform_later).and_raise(StandardError, "Job queue error")
+        allow(Rails.logger).to receive(:error)
       end
 
-      it "redirects with processor error message" do
+      it "marks SalesImport as failed and logs error" do
         post upload_path, params: { import_file: valid_file }
 
+        created_import = SalesImport.last
+        expect(created_import.status).to eq('failed')
+        expect(Rails.logger).to have_received(:error)
+          .with("Failed to enqueue processing job for sales import #{created_import.id}: Job queue error")
         expect(response).to redirect_to(root_path)
-        expect(flash[:alert]).to eq("Processing failed: Service error")
+        expect(flash[:alert]).to eq("Failed to start processing. Please try again.")
       end
+    end
+  end
+
+  describe "integration workflow" do
+    let(:valid_file) do
+      fixture_file_upload(Rails.root.join('spec', 'fixtures', 'files', 'valid_sales.tab'), 'text/tab-separated-values')
+    end
+
+    it "processes complete upload to job execution workflow" do
+      # Upload file
+      post upload_path, params: { import_file: valid_file }
+
+      # Verify initial state
+      sales_import = SalesImport.last
+      expect(sales_import.status).to eq('pending')
+      expect(enqueued_jobs.size).to eq(1)
+      expect(enqueued_jobs.first['job_class']).to eq('SalesImportProcessingJob')
+      expect(enqueued_jobs.first['arguments']).to eq([ sales_import.id ])
+
+      # Mock successful processing
+      processor_service = instance_double(SalesImports::Processor)
+      allow(SalesImports::Processor).to receive(:new).with(sales_import).and_return(processor_service)
+      allow(processor_service).to receive(:call).and_return(Dry::Monads::Success())
+      allow(Rails.logger).to receive(:info)
+
+      # Execute enqueued jobs
+      perform_enqueued_jobs
+
+      # Verify job execution
+      expect(performed_jobs.size).to eq(1)
+      expect(performed_jobs.first['job_class']).to eq('SalesImportProcessingJob')
+      expect(Rails.logger).to have_received(:info)
+        .with("Sales import #{sales_import.id} processed successfully")
     end
   end
 end
