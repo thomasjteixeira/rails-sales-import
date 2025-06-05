@@ -26,17 +26,28 @@ class SalesImport < ApplicationRecord
     sales.count
   end
 
-
-
-    def self.last_gross_income
+  class << self
+    def last_gross_income
       successful.order(created_at: :desc).first&.total_sales_cents || 0
     end
 
-    def self.total_gross_income
+    def total_gross_income
       successful.sum(:total_sales_cents) || 0
     end
 
-    def self.recent_imports(limit = 5)
+    def recent_imports(limit = 5)
       includes(:sales).recent.limit(limit)
     end
+
+    def calculate_statistics
+      stats = SalesImport.group(:status).count
+      {
+        total_imports: SalesImport.count,
+        successful_imports: stats["completed"] || 0,
+        failed_imports: stats["failed"] || 0,
+        pending_imports: stats["pending"] || 0,
+        total_gross_income: SalesImport.successful.sum(:total_sales_cents) || 0
+      }
+    end
+  end
 end

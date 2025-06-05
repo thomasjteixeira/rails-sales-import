@@ -13,6 +13,5 @@ Rails.application.routes.draw do
   get "dashboard/index"
   post "upload", to: "dashboard#upload"
 
-  get "import_history", to: "import_history#index", as: "import_history"
-  delete "import_history/:id", to: "import_history#destroy", as: "destroy_import"
+  resources :import_history, only: [ :index, :destroy ]
 end
