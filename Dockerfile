@@ -1,12 +1,6 @@
 # syntax=docker/dockerfile:1
 # check=error=true
 
-# This Dockerfile is designed for production, not development. Use with Kamal or build'n'run by hand:
-# docker build -t rails_sales_import .
-# docker run -d -p 80:80 -e RAILS_MASTER_KEY=<value from config/master.key> --name rails_sales_import rails_sales_import
-
-# For a containerized dev environment, see Dev Containers: https://guides.rubyonrails.org/getting_started_with_devcontainer.html
-
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version
 ARG RUBY_VERSION=3.4.4
 FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
@@ -23,7 +17,7 @@ RUN apt-get update -qq && \
 ENV RAILS_ENV="production" \
     BUNDLE_DEPLOYMENT="1" \
     BUNDLE_PATH="/usr/local/bundle" \
-    BUNDLE_WITHOUT="development"
+    BUNDLE_WITHOUT="development:test"
 
 # Throw-away build stage to reduce size of final image
 FROM base AS build
@@ -62,10 +56,10 @@ COPY --from=build /rails /rails
 RUN groupadd --system --gid 1000 rails && \
     useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash && \
     chown -R rails:rails db log storage tmp && \
-    chmod +x /rails/bin/render-build /rails/bin/render-deploy
+    chmod +x /rails/bin/render-build
 
 USER 1000:1000
 
-# Start server via Thruster by default
-EXPOSE 3000
-CMD ["./bin/thrust", "./bin/rails", "server"]
+# Start Rails server directly on port 80
+EXPOSE 80
+CMD ["bundle", "exec", "rails", "server", "-p", "80", "-b", "0.0.0.0"]
