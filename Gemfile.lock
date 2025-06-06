@@ -140,6 +140,7 @@ GEM
       railties (>= 5.0.0)
     faker (3.5.1)
       i18n (>= 1.8.11, < 2)
+    foreman (0.88.1)
     fugit (1.11.1)
       et-orbi (~> 1, >= 1.2.11)
       raabro (~> 1.4)
@@ -481,6 +482,7 @@ DEPENDENCIES
   erb_lint
   factory_bot_rails
   faker
+  foreman
   importmap-rails
   jbuilder
   kamal
