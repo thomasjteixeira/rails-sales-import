@@ -19,8 +19,6 @@ Rails.application.configure do
   config.log_level = :info
   config.log_tags = [ :request_id ]
 
-  # SQLite specific configurations for production
-  config.active_record.sqlite3_production_warning = false
 
   # Eager load code on boot for better performance and memory savings (ignored by Rake tasks).
   config.eager_load = true

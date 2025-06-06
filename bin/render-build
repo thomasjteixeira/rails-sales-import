@@ -21,7 +21,7 @@ RAILS_ENV=production bundle exec rails db:seed
 
 # Precompile assets
 echo "🎨 Precompiling assets..."
-bundle exec rails assets:precompile
+SECRET_KEY_BASE_DUMMY=1 bundle exec rails assets:precompile
 
 # Clean up
 echo "🧹 Cleaning up..."
