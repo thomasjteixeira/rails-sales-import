@@ -1,0 +1,145 @@
+<div class="container mx-auto px-4 py-8">
+  <% if notice %>
+    <div class="alert alert-success mb-4">
+      <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <span><%= notice %> - Please refresh the page to update the table.</span>
+    </div>
+  <% end %>
+
+  <% if alert %>
+    <div class="alert alert-error mb-4">
+      <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <span><%= alert %></span>
+    </div>
+  <% end %>
+
+  <%= form_with url: upload_path, multipart: true, local: true, class: "mb-8 p-6 bg-base-100 rounded-box shadow" do |form| %>
+    <h2 class="text-xl font-semibold mb-4">Upload Sales File</h2>
+    <div class="flex flex-col sm:flex-row items-center gap-4">
+      <%= form.file_field :import_file,
+          accept: ".tab,.tsv,.csv",
+          required: true,
+          class: "file-input file-input-bordered w-full sm:flex-1" %>
+      <%= form.submit "Import",
+          class: "btn btn-primary",
+          data: { disable_with: "Processing..." } do %>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
+        </svg>
+        Import
+      <% end %>
+    </div>
+    <div class="text-sm text-base-content/70 mt-3 p-3 bg-base-200/50 rounded-lg border border-base-300/50">
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+    <div class="flex items-center gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 text-info">
+        <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+      </svg>
+      <span class="font-medium">Supported formats:</span>
+      <code class="px-2 py-1 bg-base-100 rounded text-xs font-mono border">.tab</code>
+      <code class="px-2 py-1 bg-base-100 rounded text-xs font-mono border">.tsv</code>
+      <code class="px-2 py-1 bg-base-100 rounded text-xs font-mono border">.csv</code>
+    </div>
+    <div class="flex items-center gap-2">
+      <span class="text-xs text-base-content/60 hidden sm:block">Need examples?</span>
+      <div class="flex items-center gap-2">
+        <div class="tooltip" data-tip="Download a sample file with validation errors to test error handling">
+          <%= link_to sample_file_path(filename: "invalid_sales_empty_purchaser.tab"),
+              class: "btn btn-ghost btn-xs gap-1 hover:btn-warning" do %>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+            </svg>
+            Invalid Sample
+          <% end %>
+        </div>
+        <div class="tooltip" data-tip="Download a valid sample file to test successful import">
+          <%= link_to sample_file_path(filename: "example_input.tab"),
+              class: "btn btn-ghost btn-xs gap-1 hover:btn-success" do %>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+            </svg>
+            Valid Sample
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="mt-2 pt-2 border-t border-base-300/30">
+    <p class="text-xs text-base-content/60 flex items-center gap-1">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m4.5 0a12.06 12.06 0 0 1 0-4.5m-4.5 4.5a12.06 12.06 0 0 1 0-4.5m-4.5 0a12.06 12.06 0 0 1 4.5 0m0 0V8.25m0 0V5.625m0 2.625h.008v.008H12V8.25Z" />
+      </svg>
+      Files should be tab-separated with headers: purchaser name, item description, item price, purchase count, merchant address, merchant name
+    </p>
+  </div>
+</div>
+  <% end %>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+    <div class="card bg-base-100 shadow-xl">
+      <div class="card-body py-4">
+        <div class="stat">
+            <div class="stat-title text-base-content/70 text-lg">Last Gross Income</div>
+          <div class="stat-value text-primary">
+            <%= number_to_currency((@last_gross_income / 100.0), unit: "R$", separator: ",", delimiter: ".", format: "%u %n") %>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card bg-base-100 shadow-xl">
+      <div class="card-body py-4">
+        <div class="stat">
+          <div class="stat-title text-base-content/70 text-lg">Total Gross Income</div>
+          <div class="stat-value text-green-400">
+            <%= number_to_currency((@total_gross_income / 100.0), unit: "R$", separator: ",", delimiter: ".", format: "%u %n") %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%# Recent Imports Section %>
+  <div class="bg-base-100 rounded-box shadow p-6">
+    <h2 class="text-xl font-semibold mb-4">Recent Imports</h2>
+    <div class="overflow-x-auto">
+      <table class="table w-full">
+        <thead>
+          <tr>
+            <th>Filename</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th class="text-right">Gross Income</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if @recent_imports.any? %>
+            <% @recent_imports.each do |import| %>
+              <tr>
+                <td><%= import.filename || 'N/A' %></td>
+                <td><%= import.created_at.strftime('%Y-%m-%d %H:%M') %></td>
+                <td>
+                  <span class="badge <%= status_badge_class(import.status) %> badge-outline">
+                    <%= import.status.humanize %>
+                  </span>
+                </td>
+                <td class="text-right">
+                  <%= number_to_currency((import.total_sales_cents || 0) / 100.0, unit: "R$", separator: ",", delimiter: ".", format: "%u %n") %>
+                </td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="4" class="text-center text-base-content/60">
+                No imports found. Upload your first sales file to get started!
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

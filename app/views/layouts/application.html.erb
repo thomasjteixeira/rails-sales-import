@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "Rails Sales Import" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
+    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+
+    <link rel="icon" href="/icon_sales.png" type="image/png">
+    <link rel="apple-touch-icon" href="/icon_sales.png">
+
+    <%# Includes all stylesheet files in app/assets/stylesheets %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  </head>
+
+  <body class="bg-gray-100">
+    <header>
+      <div class="navbar bg-base-100 shadow-sm">
+        <div class="flex-1">
+          <%= link_to root_path, class: "btn btn-ghost text-base sm:text-xl" do %>
+            <%= image_tag "/icon_sales.png", class: "w-6 h-6 mr-2 inline-block align-middle", alt: "Sales Icon" %>
+            Sales Import System
+          <% end %>
+        </div>
+        <div class="flex-none">
+          <ul class="menu menu-horizontal px-1">
+            <li><%= link_to "Dashboard", root_path, class: "font-bold text-gray-600 hover:text-gray-800" %></li>
+            <li><%= link_to "Import History", import_history_index_path, class: "font-bold text-gray-600 hover:text-gray-800 #{current_page?(import_history_index_path) ? 'active' : ''}" %></li>
+          </ul>
+        </div>
+      </div>
+    </header>
+    <main class="container mx-auto px-5 flex">
+      <%= yield %>
+    </main>
+  </body>
+  <footer class="footer footer-center p-4 bg-base-200 text-base-content mt-10">
+    <aside>
+      <p>© <%= Date.today.year %> Sales Import System.</p>
+    </aside>
+  </footer>
+</html>

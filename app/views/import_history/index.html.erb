@@ -1,0 +1,195 @@
+<div class="container mx-auto px-4 py-8">
+  <!-- Page Header -->
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
+    <div>
+      <h1 class="text-3xl font-bold mb-2">Import History</h1>
+      <p class="text-base-content/70">View and manage all your file imports</p>
+    </div>
+    <div class="mt-4 sm:mt-0">
+      <%= link_to root_path, class: "btn btn-outline" do %>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+        </svg>
+        Back to Dashboard
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <!-- Total Imports Card -->
+    <div class="card bg-base-100 shadow-sm">
+      <div class="card-body p-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="card-title text-lg text-primary">Total Imports</h2>
+            <p class="text-3xl font-bold text-primary"><%= @statistics[:total_imports] %></p>
+          </div>
+          <div class="text-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Successful Imports Card -->
+    <div class="card bg-base-100 shadow-sm">
+      <div class="card-body p-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="card-title text-lg text-success">Successful</h2>
+            <p class="text-3xl font-bold text-success"><%= @statistics[:successful_imports] %></p>
+          </div>
+          <div class="text-success">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Failed Imports Card -->
+    <div class="card bg-base-100 shadow-sm">
+      <div class="card-body p-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="card-title text-lg text-error">Failed</h2>
+            <p class="text-3xl font-bold text-error"><%= @statistics[:failed_imports] %></p>
+          </div>
+          <div class="text-error">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Total Revenue Card -->
+    <div class="card bg-base-100 shadow-sm">
+      <div class="card-body p-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="card-title text-lg text-success">Total Revenue</h2>
+            <p class="text-2xl font-bold text-success"><%= format_currency(@statistics[:total_gross_income]) %></p>
+          </div>
+          <div class="text-success">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rest of the existing table content remains the same -->
+  <div class="bg-base-100 rounded-box shadow">
+    <div class="overflow-x-auto">
+      <table class="table w-full">
+        <thead>
+          <tr>
+            <th>Filename</th>
+            <th>Created At</th>
+            <th class="text-center">Status</th>
+            <th class="text-right">Sales Count</th>
+            <th class="text-right">Gross Income</th>
+            <th class="text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if @imports.any? %>
+            <% @imports.each do |import| %>
+              <tr class="hover">
+                <td>
+                  <div class="flex items-center space-x-3">
+                    <div>
+                      <div class="font-bold"><%= import.filename || 'Unknown file' %></div>
+                      <div class="text-sm opacity-50">
+                        <%= import.import_file.attached? ? "#{number_with_delimiter(import.import_file.byte_size)} bytes" : "No file attached" %>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="text-sm">
+                    <%= format_datetime(import.created_at) %>
+                  </div>
+                  <div class="text-xs opacity-50">
+                    <%= time_ago_in_words(import.created_at) %> ago
+                  </div>
+                </td>
+                <td>
+                    <div class="flex justify-center">
+                    <span class="badge <%= status_badge_class(import.status) %> badge-outline">
+                      <%= import.status.humanize %>
+                    </span>
+                    </div>
+                </td>
+                <td class="text-right">
+                  <div class="font-mono">
+                    <%= number_with_delimiter(import.sales.count) %>
+                  </div>
+                </td>
+                <td class="text-right">
+                  <div class="font-mono font-bold">
+                    <%= format_currency(import.total_sales_cents) %>
+                  </div>
+                </td>
+                <td class="text-center">
+                  <div class="dropdown dropdown-end">
+                    <div tabindex="0" role="button" class="btn btn-ghost btn-xs">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" />
+                      </svg>
+                    </div>
+                    <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+                      <% if import.import_file.attached? %>
+                        <li>
+                          <a href="<%= rails_blob_path(import.import_file, disposition: "attachment") %>" class="text-green-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                            </svg>
+                            Download File
+                          </a>
+                        </li>
+                      <% end %>
+                      <div class="divider my-1"></div>
+                        <li>
+                        <%= link_to import_history_path(import),
+                          method: :delete,
+                          data: { turbo_method: :delete },
+                          class: "text-red-600" do %>
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                          </svg>
+                          Delete
+                        <% end %>
+                        </li>
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="6" class="text-center py-12">
+                <div class="flex flex-col items-center justify-center text-base-content/60">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-16 h-16 mb-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9Z" />
+                  </svg>
+                  <h3 class="text-lg font-semibold mb-2">No imports found</h3>
+                  <p class="mb-4">Start by uploading your first sales file</p>
+                  <%= link_to "Upload File", root_path, class: "btn btn-primary" %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
