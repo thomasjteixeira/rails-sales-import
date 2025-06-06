@@ -54,15 +54,10 @@ seed_files.each_with_index do |filename, index|
 
   puts "✅ File attached successfully"
 
-  service = SalesImports::Create.new(sales_import: sales_import)
+  processor = SalesImports::Processor.new(sales_import)
+  result = processor.call
 
-  puts "Service valid? #{service.valid?}"
-  unless service.valid?
-    puts "Service errors: #{service.errors.full_messages}"
-    next
-  end
-
-  if service.call
+  if result.success?
     sales_import.reload
     puts "✅ Success! Status: #{sales_import.status}"
     puts "   📊 Total Sales: $#{sales_import.total_sales_cents / 100.0}"
@@ -70,7 +65,7 @@ seed_files.each_with_index do |filename, index|
     puts "   🛒 Sales Count: #{sales_import.sales.count}"
   else
     puts "❌ Failed to process #{filename}"
-    puts "   Errors: #{service.errors.full_messages.join(', ')}"
+    puts "   Error: #{result.failure}"
   end
 end
 
