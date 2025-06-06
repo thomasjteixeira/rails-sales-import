@@ -14,6 +14,7 @@ Um sistema moderno de importação e processamento de vendas construído com Rub
 - 📱 **Interface responsiva** com DaisyUI/Tailwind CSS
 - 🔍 **Arquivos de exemplo** para testes
 - 🚀 **Deploy automatizado** no Render
+- 🧪 **SimpleCov** - Relatórios de cobertura de testes (98.37% de cobertura)
 
 ## 🛠️ Tecnologias Utilizadas
 
