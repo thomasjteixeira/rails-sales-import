@@ -11,6 +11,8 @@ Sidekiq.configure_client do |config|
   config.redis = { url: redis_url }
 end
 
+Rails.application.config.cache_store = :redis_cache_store, { url: redis_url }
+
 if Rails.env.production?
   Sidekiq::Web.use(Rack::Auth::Basic) do |user, password|
     [ user, password ] == [ "admin", "admin" ]

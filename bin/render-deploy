@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+echo "🚀 Starting deployment setup..."
+
+# Ensure storage directory exists
+echo "📁 Ensuring storage directory exists..."
+mkdir -p /opt/render/project/src/storage
+
+# Create database if it doesn't exist and migrate
+echo "🗄️ Setting up database..."
+bundle exec rails db:prepare
+
+# Check if database has data, if not seed it
+echo "🌱 Checking if database needs seeding..."
+if bundle exec rails runner "exit(SalesImport.count > 0 ? 0 : 1)" 2>/dev/null; then
+  echo "✅ Database already has data, skipping seed"
+else
+  echo "🌱 Database is empty, seeding with sample data..."
+  bundle exec rails db:seed
+  echo "✅ Database seeded successfully!"
+fi
+
+echo "🎉 Deployment setup completed!"

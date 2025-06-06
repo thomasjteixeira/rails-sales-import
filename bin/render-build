@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# exit on error
+set -o errexit
+
+echo "🔨 Starting Render build process..."
+
+# Create storage directory for SQLite
+echo "📁 Creating storage directory..."
+mkdir -p storage
+
+# Install dependencies
+echo "📦 Installing Ruby gems..."
+bundle install
+
+# Precompile assets
+echo "🎨 Precompiling assets..."
+bundle exec rails assets:precompile
+
+# Clean up
+echo "🧹 Cleaning up..."
+bundle exec rails assets:clean
+
+echo "✅ Build completed successfully!"

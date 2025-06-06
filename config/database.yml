@@ -26,7 +26,8 @@ test:
 production:
   primary:
     <<: *default
-    database: storage/production.sqlite3
+    database: <%= ENV.fetch("DATABASE_PATH") { "storage/production.sqlite3" } %>
+    pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   cache:
     <<: *default
     database: storage/production_cache.sqlite3

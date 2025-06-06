@@ -6,8 +6,6 @@ class ImportHistoryController < ApplicationController
   def index
     @imports = SalesImport.includes(:sales)
                           .order(created_at: :desc)
-                          .page(params[:page])
-                          .per(20)
     @statistics = SalesImport.calculate_statistics
   end
 

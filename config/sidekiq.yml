@@ -13,5 +13,8 @@ test:
   :concurrency: 1
 
 production:
-  :concurrency: 10
+  :concurrency: <%= ENV.fetch("WEB_CONCURRENCY", 2) %>
   :timeout: 30
+
+:dead_timeout_in_seconds: 30
+:dead_max_jobs: 10

@@ -6,6 +6,22 @@ Rails.application.configure do
   # Code is not reloaded between requests.
   config.enable_reloading = false
 
+  # Configure Active Storage for production
+  config.active_storage.variant_processor = :mini_magick
+
+  # Configure hosts (important for Render)
+  config.hosts << /.*\.onrender\.com/
+
+  # Force SSL in production
+  config.force_ssl = true
+
+  # Configure logging
+  config.log_level = :info
+  config.log_tags = [ :request_id ]
+
+  # SQLite specific configurations for production
+  config.active_record.sqlite3_production_warning = false
+
   # Eager load code on boot for better performance and memory savings (ignored by Rake tasks).
   config.eager_load = true
 
