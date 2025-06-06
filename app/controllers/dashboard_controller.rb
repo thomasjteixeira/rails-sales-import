@@ -36,8 +36,22 @@ class DashboardController < ApplicationController
   end
 
   def enqueue_processing_job(sales_import)
-    SalesImportProcessingJob.perform_later(sales_import.id)
-    redirect_to root_path, notice: "File uploaded successfully! Processing in background..."
+    if Rails.env.production?
+      processor = SalesImports::Processor.new(sales_import)
+      result = processor.call
+
+      if result.success?
+        redirect_to root_path, notice: "File processed successfully!"
+      else
+        error_message = result.failure
+         Rails.logger.error "❌ [Production] Processing failed: #{error_message}"
+        sales_import.update!(status: :failed)
+        redirect_to root_path, alert: "Failed to process file: #{error_message}"
+      end
+    else
+      SalesImportProcessingJob.perform_later(sales_import.id)
+      redirect_to root_path, notice: "File uploaded successfully! Processing in background..."
+    end
   rescue StandardError => e
     Rails.logger.error "Failed to enqueue processing job for sales import #{sales_import.id}: #{e.message}"
     sales_import.update!(status: :failed)
