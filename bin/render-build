@@ -12,6 +12,13 @@ mkdir -p storage
 echo "📦 Installing Ruby gems..."
 bundle install
 
+# Setup database and seed
+echo "🗄️ Setting up database..."
+RAILS_ENV=production bundle exec rails db:prepare
+
+echo "🌱 Seeding database with sample data..."
+RAILS_ENV=production bundle exec rails db:seed
+
 # Precompile assets
 echo "🎨 Precompiling assets..."
 bundle exec rails assets:precompile

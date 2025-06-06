@@ -3,6 +3,7 @@ services:
     name: rails-sales-import-redis
     plan: free
     maxmemoryPolicy: allkeys-lru
+    ipAllowList: []
 
   - type: web
     name: rails-sales-import-web
@@ -10,10 +11,6 @@ services:
     plan: free
     buildCommand: "./bin/render-build"
     startCommand: "./bin/thrust ./bin/rails server"
-    disk:
-      name: rails-sales-import-data
-      mountPath: /opt/render/project/src/storage
-      sizeGB: 1
     envVars:
       - key: REDIS_URL
         fromService:
@@ -23,7 +20,7 @@ services:
       - key: RAILS_MASTER_KEY
         sync: false
       - key: WEB_CONCURRENCY
-        value: 2
+        value: 1
       - key: RAILS_MAX_THREADS
         value: 5
       - key: RAILS_ENV
@@ -34,8 +31,6 @@ services:
         value: true
       - key: RAILS_LOG_TO_STDOUT
         value: true
-      - key: DATABASE_PATH
-        value: /opt/render/project/src/storage/production.sqlite3
 
   - type: worker
     name: rails-sales-import-worker
@@ -43,10 +38,6 @@ services:
     plan: free
     buildCommand: "./bin/render-build"
     startCommand: "bundle exec sidekiq -C config/sidekiq.yml"
-    disk:
-      name: rails-sales-import-data
-      mountPath: /opt/render/project/src/storage
-      sizeGB: 1
     envVars:
       - key: REDIS_URL
         fromService:
@@ -59,5 +50,3 @@ services:
         value: production
       - key: BUNDLE_WITHOUT
         value: development:test
-      - key: DATABASE_PATH
-        value: /opt/render/project/src/storage/production.sqlite3
