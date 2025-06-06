@@ -18,4 +18,6 @@ Rails.application.routes.draw do
   post "upload", to: "dashboard#upload"
 
   resources :import_history, only: [ :index, :destroy ]
+
+  get "/samples/:filename", to: "sample_files#show", as: :sample_file, constraints: { filename: /[^\/]+/ }
 end
